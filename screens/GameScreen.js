@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View, Text, FlatList } from "react-native";
 import Title from "../components/ui/Title";
 import NumberContainer from "../components/game/NumberContainer";
 import PrimaryButton from "../components/ui/PrimaryButton";
@@ -25,6 +25,7 @@ function GameScreen({ userNumber, onGameOver }) {
     userNumber
   );
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
+  const [guessRounds, setGuessRounds] = useState([initialGuess]);
 
   useEffect(() => {
     if (currentGuess === userNumber) {
@@ -60,6 +61,7 @@ function GameScreen({ userNumber, onGameOver }) {
       currentGuess
     );
     setCurrentGuess(newRndNumber);
+    setGuessRounds((prevGuessRounds) => [newRndNumber, ...prevGuessRounds]);
   }
 
   return (
@@ -83,7 +85,17 @@ function GameScreen({ userNumber, onGameOver }) {
           </View>
         </View>
       </Card>
-      <View></View>
+      <View style={styles.listContainer}>
+        <FlatList
+          data={guessRounds}
+          renderItem={({ item, index }) => (
+            <Text key={index} style={styles.listItem}>
+              Round {guessRounds.length - index}: {item}
+            </Text>
+          )}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      </View>
     </View>
   );
 }
@@ -103,5 +115,16 @@ const styles = StyleSheet.create({
   },
   instructiontext: {
     marginBottom: 12,
+  },
+  listContainer: {
+    flex: 1,
+    marginTop: 20,
+  },
+  listItem: {
+    borderColor: "#ccc",
+    borderWidth: 1,
+    padding: 10,
+    marginVertical: 10,
+    backgroundColor: "white",
   },
 });
