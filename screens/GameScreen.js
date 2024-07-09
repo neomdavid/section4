@@ -6,6 +6,7 @@ import PrimaryButton from "../components/ui/PrimaryButton";
 import Card from "../components/ui/Card";
 import InstructionText from "../components/ui/InstructionText";
 import { Ionicons } from "@expo/vector-icons";
+import GuessLogItem from "../components/game/GuessLogItem";
 
 function generateRandomBetween(min, max, exclude) {
   let rndNum;
@@ -29,9 +30,10 @@ function GameScreen({ userNumber, onGameOver }) {
 
   useEffect(() => {
     if (currentGuess === userNumber) {
-      onGameOver();
+      console.log("game over!!");
+      onGameOver(guessRounds.length);
     }
-  }, [currentGuess, userNumber, onGameOver]);
+  }, [currentGuess, userNumber, onGameOver, guessRounds]);
 
   useEffect(() => {
     minBoundary = 1;
@@ -64,6 +66,8 @@ function GameScreen({ userNumber, onGameOver }) {
     setGuessRounds((prevGuessRounds) => [newRndNumber, ...prevGuessRounds]);
   }
 
+  const guessRoundsListLength = guessRounds.length;
+
   return (
     <View style={styles.screen}>
       <Title>Opponent's Guess</Title>
@@ -88,12 +92,13 @@ function GameScreen({ userNumber, onGameOver }) {
       <View style={styles.listContainer}>
         <FlatList
           data={guessRounds}
-          renderItem={({ item, index }) => (
-            <Text key={index} style={styles.listItem}>
-              Round {guessRounds.length - index}: {item}
-            </Text>
+          renderItem={(itemData) => (
+            <GuessLogItem
+              roundNumber={guessRoundsListLength - itemData.index}
+              guess={itemData.item}
+            />
           )}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item}
         />
       </View>
     </View>
@@ -106,6 +111,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     padding: 24,
+    alignItems: "center",
   },
   buttonsContainer: {
     flexDirection: "row",
